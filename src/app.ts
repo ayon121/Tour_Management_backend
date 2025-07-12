@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from "cors";
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { router } from "./app/Modules/routes";
-import { envVars } from "./app/Config/env";
+
+import { GlobalErrorHandler } from "./app/Middlewares/globalerrorHandler";
 
 
 const app = express()
@@ -19,15 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 
-app.use((err: any, req: Request, res: Response , next : NextFunction)  => {
-    res.status(500).json({
-        success: false,
-        message: `Something Went Wrong!!${err.message} From Global Error`,
-        err,
-        stack : envVars.NODE_ENV == "development" ? err.stack : null
-    
-    })
-})
+app.use(GlobalErrorHandler)
 
 
 export default app
