@@ -4,6 +4,7 @@ import express, { Request, Response } from "express";
 import { router } from "./app/Modules/routes";
 
 import { GlobalErrorHandler } from "./app/Middlewares/globalerrorHandler";
+import notFound from "./app/Middlewares/notFound";
 
 
 const app = express()
@@ -22,5 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use(GlobalErrorHandler)
 
+
+app.use(notFound)
 
 export default app

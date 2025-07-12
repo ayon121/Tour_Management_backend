@@ -1,3 +1,4 @@
+
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 
@@ -11,8 +12,22 @@ const createUserService = async (payload: Partial<IUser>) => {
     return user
 }
 
+const getAllUserService = async() => {
+    const users = await User.find({})
+
+    const totalUsers = await User.countDocuments()
+
+    return {
+        data : users,
+        meta : {
+            total : totalUsers
+        }
+    }
+}
+
 export const UserServices = {
-    createUserService
+    createUserService,
+    getAllUserService
 } 
 
 
