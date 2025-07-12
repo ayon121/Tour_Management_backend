@@ -1,12 +1,22 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { IUser } from "./user.interface";
+import AppError from "../../ErrorHelpers/AppError";
+import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
 
 const createUserService = async (payload: Partial<IUser>) => {
-    const {name , email} = payload;
+    const { email,  ...rest} = payload;
+
+    const isUserExist = await User.findOne({email})
+    if(isUserExist){
+        throw new AppError(500 , "User Already Exist")
+    }
+
+    const autProvider : IAuthProvider = {provider: "credentials", providerid : email as string}
     const user = await User.create({
-        name: name,
         email: email,
+        auths : [autProvider],
+        ...rest
     })
 
     return user
