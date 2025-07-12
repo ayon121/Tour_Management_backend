@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
 
 
-const createUser = async (req : Request , res : Response) => {
+const createUser = async (req : Request , res : Response , next : NextFunction) => {
     try {
         const user = await UserServices.createUserService(req.body)
 
@@ -15,9 +15,7 @@ const createUser = async (req : Request , res : Response) => {
     } catch (err : any) {
         // eslint-disable-next-line no-console
         console.log(err);
-        res.status(400).json({
-            message : `Something Went Wrong, Please Try Again Later ${err.message}`
-        })
+        next(err)
 
         
     }
