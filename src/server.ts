@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { Server } from "http";
 import app from "./app";
 import { envVars } from "./app/Config/env";
+import { SeedSuperAdmin } from "./app/utils/SuperAdmin";
 
 
 
@@ -12,21 +13,26 @@ let server: Server;
 
 const startServer = async () => {
     try {
-        
+
         await mongoose.connect(envVars.DB_URL)
         console.log("Connected to DB!!");
 
         server = app.listen(envVars.PORT, () => {
             console.log(`Server is listening to port ${envVars.PORT}`);
         });
-       
+
     } catch (error) {
         console.log(error);
     }
 }
 
 
-startServer()
+// ---------------- start server --- super admin check ---/
+(async () => {
+    await startServer()
+    // for new server creates new super_admin
+    await SeedSuperAdmin()
+})()
 
 
 process.on("SIGTERM", () => {

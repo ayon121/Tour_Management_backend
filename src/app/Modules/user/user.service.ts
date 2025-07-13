@@ -1,5 +1,6 @@
 
 
+import { envVars } from "../../Config/env";
 import AppError from "../../ErrorHelpers/AppError";
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
@@ -13,7 +14,7 @@ const createUserService = async (payload: Partial<IUser>) => {
         throw new AppError(500 , "User Already Exist")
     }
 
-    const hashPassword = await bcrypt.hash(password as string , 10)
+    const hashPassword = await bcrypt.hash(password as string , Number(envVars.BCRYPT_SALT))
     // const isPasswordMatch = await bcrypt.compare(password as string , hashPassword)
 
     const autProvider : IAuthProvider = {provider: "credentials", providerid : email as string}

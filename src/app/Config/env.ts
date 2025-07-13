@@ -9,10 +9,13 @@ interface EnvConfig {
     JWT_SECRET : string,
     Jwt_ACCESS_EXPIRES : string, 
     BCRYPT_SALT : string,
+    SUPER_ADMIN_EMAIL : string ,
+    SUPER_ADMIN_PASS : string
+
 }
 
 const loadEnvVariables = (): EnvConfig => {
-    const requiredEnvVariables: string[] = ["PORT", "DB_URL", "NODE_ENV" , "JWT_SECRET" , "Jwt_ACCESS_EXPIRES" , "BCRYPT_SALT"];
+    const requiredEnvVariables: string[] = ["PORT", "DB_URL", "NODE_ENV" , "JWT_SECRET" , "Jwt_ACCESS_EXPIRES" , "BCRYPT_SALT" , "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASS"];
 
     requiredEnvVariables.forEach(key => {
         if (!process.env[key]) {
@@ -28,6 +31,8 @@ const loadEnvVariables = (): EnvConfig => {
         JWT_SECRET : process.env.JWT_SECRET as string,
         Jwt_ACCESS_EXPIRES : process.env.Jwt_ACCESS_EXPIRES as string, 
         BCRYPT_SALT : process.env.BCRYPT_SALT as string,
+        SUPER_ADMIN_EMAIL : process.env.SUPER_ADMIN_EMAIL as string,
+        SUPER_ADMIN_PASS : process.env.SUPER_ADMIN_PASS as string
     }
 }
 
