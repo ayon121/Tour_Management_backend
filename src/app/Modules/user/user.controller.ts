@@ -3,6 +3,9 @@
 import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { verifyToken } from "../../utils/jwt";
+import { envVars } from "../../Config/env";
+import { JwtPayload } from "jsonwebtoken";
 
 
 // type AsncHandler = (req: Request, res: Response, next: NextFunction) => Promise<void>
@@ -42,6 +45,34 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 
 }
 
+const UpdateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        const userId = req.params.id
+        const token = req.headers.authorization
+        const verified = verifyToken(token as string , envVars.JWT_SECRET) as JwtPayload
+        const payload = req.body
+        const user = await UserServices.UpdateUserService(userId , payload , verified)
+
+        sendResponse(res , {
+            success : true,
+            statusCode : 201,
+            message : "User Created Successfully",
+            data : user,
+
+        })
+
+
+        
+    } catch (err: any) {
+        console.log(err);
+        next(err)
+
+
+    }
+
+}
+
 
 const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -68,4 +99,5 @@ const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
 export const UserControllers = {
     createUser,
     getAllUser,
+    UpdateUser,
 }

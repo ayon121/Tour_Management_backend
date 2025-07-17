@@ -17,6 +17,7 @@ export const Userrouter = Router()
 
 Userrouter.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser)
 Userrouter.get("/all-users", checkAuth( Role.ADMIN, Role.SUPER_ADMIN) , UserControllers.getAllUser)
+Userrouter.patch("/:id" , checkAuth(...Object.values(Role)) , UserControllers.UpdateUser)
 
 
 
