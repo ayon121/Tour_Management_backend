@@ -22,6 +22,8 @@ export const checkAuth = (...authRoles : string[] ) => async (req: Request, res:
         if(!authRoles.includes(verifiedToken.role)){
             throw new AppError(403 , "User Not Permitted")
         }
+
+        req.user = verifiedToken
         next()
 
     } catch (err) {

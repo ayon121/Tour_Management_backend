@@ -3,9 +3,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
-import { verifyToken } from "../../utils/jwt";
-import { envVars } from "../../Config/env";
-import { JwtPayload } from "jsonwebtoken";
+
 
 
 // type AsncHandler = (req: Request, res: Response, next: NextFunction) => Promise<void>
@@ -49,9 +47,11 @@ const UpdateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
         const userId = req.params.id
-        const token = req.headers.authorization
-        const verified = verifyToken(token as string , envVars.JWT_SECRET) as JwtPayload
+        // const token = req.headers.authorization
+        // const verified = verifyToken(token as string , envVars.JWT_SECRET) as JwtPayload
         const payload = req.body
+        const verified = req.user;
+
         const user = await UserServices.UpdateUserService(userId , payload , verified)
 
         sendResponse(res , {
