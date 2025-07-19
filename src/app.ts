@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from "cors";
+import cookie from "cookie-parser";
 import express, { Request, Response } from "express";
 import { router } from "./app/Modules/routes";
 
@@ -10,6 +11,7 @@ import notFound from "./app/Middlewares/notFound";
 const app = express()
 
 app.use(express.json())
+app.use(cookie())
 app.use(cors())
 app.use("/api/v1/", router)
 

@@ -3,10 +3,25 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../utils/sendResponse";
 import { AuthServices } from "./auth.service";
+import AppError from "../../ErrorHelpers/AppError";
+import { setAuthCookie } from "../../utils/setcookie";
 
 const creadentialLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const loginInfo = await AuthServices.creadentialLoginService(req.body)
+
+
+        // // saving cookie in the frontend browser
+        // res.cookie("refreshtoken" , loginInfo.refreshToken , {
+        //     httpOnly : true,
+        //     secure : false
+        // })
+        // res.cookie("accesstoken" , loginInfo.accesstoken, {
+        //     httpOnly : true,
+        //     secure : false
+        // })
+
+        setAuthCookie(res , loginInfo)
         
         sendResponse(res , {
             success : true,
@@ -20,6 +35,91 @@ const creadentialLogin = async (req: Request, res: Response, next: NextFunction)
     }
 }
 
+
+
+const getNewAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const refreshToken = req.cookies.refreshtoken;
+
+        if(!refreshToken){
+            throw new AppError(500 , "No Refresh Token")
+        }
+        const tokenInfo = await AuthServices.getNewAccessToken(refreshToken as string)
+        
+        // setting cookie for frontend
+        // res.cookie("accesstoken" , tokenInfo.accesstoken, {
+        //     httpOnly : true,
+        //     secure : false
+        // })
+
+        setAuthCookie(res ,tokenInfo)
+        
+        sendResponse(res , {
+            success : true,
+            statusCode : 201,
+            message : "New Access Token Retrive Successfully",
+            data : tokenInfo
+        })
+    } catch (err: any) {
+        console.log(err);
+        next(err)
+    }
+}
+
+
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        res.clearCookie("accesstoken" , {
+            httpOnly : true,
+            secure : false,
+            sameSite : "lax"
+        })
+        res.clearCookie("refreshtoken" , {
+            httpOnly : true,
+            secure : false,
+            sameSite : "lax"
+        })
+        
+        sendResponse(res , {
+            success : true,
+            statusCode : 201,
+            message : "User Logged out Successfully",
+            data : null
+        })
+    } catch (err: any) {
+        console.log(err);
+        next(err)
+    }
+}
+
+
+
+
+const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        
+
+        const newPassword = req.body.newPassword;
+        const oldPassword = req.body.oldPassword;
+        const decodedToken = req.user
+    
+
+        await AuthServices.resetPassword(oldPassword , newPassword ,decodedToken)
+        
+        sendResponse(res , {
+            success : true,
+            statusCode : 201,
+            message : "Password Changed Successfully",
+            data : null
+        })
+    } catch (err: any) {
+        console.log(err);
+        next(err)
+    }
+}
 export const AuthControllers = {
-    creadentialLogin  
+    creadentialLogin  ,
+    getNewAccessToken ,
+    logout,
+    resetPassword
 }
