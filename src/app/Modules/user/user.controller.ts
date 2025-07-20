@@ -3,6 +3,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
@@ -52,7 +53,7 @@ const UpdateUser = async (req: Request, res: Response, next: NextFunction) => {
         const payload = req.body
         const verified = req.user;
 
-        const user = await UserServices.UpdateUserService(userId , payload , verified)
+        const user = await UserServices.UpdateUserService(userId , payload , verified as JwtPayload)
 
         sendResponse(res , {
             success : true,
