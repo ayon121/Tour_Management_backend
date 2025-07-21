@@ -23,7 +23,7 @@ passport.use(
 
             const isGoogleAuthenticated = isUserExist.auths.some(providersObject => providersObject.provider == "google")
 
-            if(isGoogleAuthenticated){
+            if(isGoogleAuthenticated  && !isUserExist.password){
                 return done(null , false , {message : "You have Authenticated through Google Login"})
             }
             const isPasswordMatch = await bcrypt.compare(password as string, isUserExist.password as string)
