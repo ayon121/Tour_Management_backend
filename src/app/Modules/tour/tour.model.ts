@@ -1,24 +1,45 @@
-import mongoose from "mongoose";
-import { Server } from "http";
-import  express  from "express";
-
-const app = express()
+import { model, Schema } from "mongoose";
+import { ITour, ITourType } from "./tour.interface";
 
 
-let server: Server;
+const TourTypeSchema = new Schema<ITourType> ({
+    name : {type : String , required : true , unique : true}
+} , {
+    timestamps : true
+})
 
-const startServer = async () => {
-    try {
-        await mongoose.connect("mongodb+srv://dataAdmin:ayon1234@cluster0.6rjuyq3.mongodb.net/tour_mangement?retryWrites=true&w=majority&appName=Cluster0")
-        console.log("Connected to DB!!");
 
-        server = app.listen(5000, () => {
-            console.log(`Server is listening to port 5000`);
-        });
-       
-    } catch (error) {
-        
+export const TourType = model<ITourType>("TourType" , TourTypeSchema)
+
+const tourSchema = new Schema<ITour> ({
+    title : {type : String , required : true},
+    slug : {type : String , required : true , unique : true},
+    description : {type : String},
+    images : {type : [String] , default : []},
+    location : {type : String},
+    costFrom : {type : Number},
+    stratDate : {type : Date},
+    endDate : {type : Date},
+    included : {type : [String] , default : []}, 
+    excluded : {type : [String] , default : []}, 
+    amenities : {type : [String] , default : []}, 
+    tourPlan : {type : [String] , default : []}, 
+    maxGuest : {type : Number},
+    minAge : {type : Number},
+    division : {
+        type : Schema.Types.ObjectId,
+        ref : "Division",
+        required : true,
+    },
+    tourType : {
+        type : Schema.Types.ObjectId,
+        ref : "TourType",
+        required : true,
     }
-}
 
-startServer()
+} , {
+    timestamps : true
+})
+
+
+export const Tour = model<ITour>("Tour", tourSchema)
