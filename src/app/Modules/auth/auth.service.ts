@@ -33,7 +33,7 @@ const creadentialLoginService = async (payload: Partial<IUser>) => {
     const { password: pass, ...rest } = isUserExist.toObject()
     return {
         accesstoken: userTokens.accesstoken,
-        refreshToken: userTokens.refreshToken,
+        refreshtoken: userTokens.refreshtoken,
         user: rest
     }
 

@@ -10,10 +10,43 @@ import { JwtPayload } from "jsonwebtoken";
 import { CreateUserToken } from "../../utils/usertoken";
 import { envVars } from "../../Config/env";
 import { catchAsync } from "../../utils/catchAsync";
+import passport from "passport";
 
 const creadentialLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const loginInfo = await AuthServices.creadentialLoginService(req.body)
+
+        // from service login system
+        // const loginInfo = await AuthServices.creadentialLoginService(req.body)
+
+        // from passport login system
+        passport.authenticate("local", async (err : any , user : any , info : any ) => {
+
+            if(err){
+                return next(err)
+            }
+
+            if(!user){
+                return next(new AppError(401 , info.message))
+            }
+
+            const userTokens = CreateUserToken(user)
+            const { password: pass, ...rest } = user.toObject()
+
+            setAuthCookie(res, userTokens)
+
+            sendResponse(res, {
+                success: true,
+                statusCode: 201,
+                message: "User Logged In Successfully",
+                data: {
+                    accesstoken : userTokens.accesstoken, 
+                    refreshtoken : userTokens.refreshtoken,
+                    user: rest
+
+                }
+            })
+
+        })(req , res, next)
 
 
         // // saving cookie in the frontend browser
@@ -26,14 +59,7 @@ const creadentialLogin = async (req: Request, res: Response, next: NextFunction)
         //     secure : false
         // })
 
-        setAuthCookie(res, loginInfo)
 
-        sendResponse(res, {
-            success: true,
-            statusCode: 201,
-            message: "User Logged In Successfully",
-            data: loginInfo
-        })
     } catch (err: any) {
         console.log(err);
         next(err)
