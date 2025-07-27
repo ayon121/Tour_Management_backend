@@ -14,10 +14,11 @@ export const Userrouter = Router()
 
 
  
-
+Userrouter.get("/me", checkAuth(...Object.values(Role)), UserControllers.getMe)
 Userrouter.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser)
 Userrouter.get("/all-users", checkAuth( Role.ADMIN, Role.SUPER_ADMIN) , UserControllers.getAllUser)
 Userrouter.patch("/:id", validateRequest(createUserZodSchema) , checkAuth(...Object.values(Role)) , UserControllers.UpdateUser)
+Userrouter.get("/:id", checkAuth(...Object.values(Role)), UserControllers.getSingleUser)
 
 
 

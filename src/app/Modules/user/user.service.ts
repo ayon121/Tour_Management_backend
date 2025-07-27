@@ -15,7 +15,7 @@ const createUserService = async (payload: Partial<IUser>) => {
         throw new AppError(500, "User Already Exist")
     }
 
-    const hashPassword = await bcrypt.hash(password as string, Number(envVars.BCRYPT_SALT))
+    const hashPassword = await bcrypt.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
     // const isPasswordMatch = await bcrypt.compare(password as string , hashPassword)
 
     const autProvider: IAuthProvider = { provider: "credentials", providerid: email as string }
@@ -77,7 +77,7 @@ const UpdateUserService = async (userId: string, payload: Partial<IUser>, decode
     }
 
     if (payload.password) {
-        payload.password = await bcrypt.hash(payload.password, Number(envVars.BCRYPT_SALT))
+        payload.password = await bcrypt.hash(payload.password, Number(envVars.BCRYPT_SALT_ROUND))
     }
 
     const newUpdatedUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
@@ -86,10 +86,27 @@ const UpdateUserService = async (userId: string, payload: Partial<IUser>, decode
 }
 
 
+
+const getSingleUser = async (id: string) => {
+    const user = await User.findById(id).select("-password");
+    return {
+        data: user
+    }
+};
+
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password");
+    return {
+        data: user
+    }
+};
+
 export const UserServices = {
     createUserService,
     getAllUserService,
-    UpdateUserService
+    UpdateUserService,
+    getMe,
+    getSingleUser,
 }
 
 

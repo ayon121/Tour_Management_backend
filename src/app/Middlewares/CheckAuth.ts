@@ -13,7 +13,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
         if (!accesstoken) {
             throw new AppError(404, "User Not Verified")
         }
-        const verifiedToken = verifyToken(accesstoken, envVars.JWT_SECRET) as JwtPayload
+        const verifiedToken = verifyToken(accesstoken, envVars.JWT_ACCESS_SECRET) as JwtPayload
         // // eslint-disable-next-line no-console
         // console.log(verifiedToken);
 

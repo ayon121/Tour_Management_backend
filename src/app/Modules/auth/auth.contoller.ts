@@ -19,14 +19,14 @@ const creadentialLogin = async (req: Request, res: Response, next: NextFunction)
         // const loginInfo = await AuthServices.creadentialLoginService(req.body)
 
         // from passport login system
-        passport.authenticate("local", async (err : any , user : any , info : any ) => {
+        passport.authenticate("local", async (err: any, user: any, info: any) => {
 
-            if(err){
+            if (err) {
                 return next(err)
             }
 
-            if(!user){
-                return next(new AppError(401 , info.message))
+            if (!user) {
+                return next(new AppError(401, info.message))
             }
 
             const userTokens = CreateUserToken(user)
@@ -39,14 +39,14 @@ const creadentialLogin = async (req: Request, res: Response, next: NextFunction)
                 statusCode: 201,
                 message: "User Logged In Successfully",
                 data: {
-                    accesstoken : userTokens.accesstoken, 
-                    refreshtoken : userTokens.refreshtoken,
+                    accesstoken: userTokens.accesstoken,
+                    refreshtoken: userTokens.refreshtoken,
                     user: rest
 
                 }
             })
 
-        })(req , res, next)
+        })(req, res, next)
 
 
         // // saving cookie in the frontend browser
@@ -126,28 +126,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
 
 
-const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-    try {
 
-
-        const newPassword = req.body.newPassword;
-        const oldPassword = req.body.oldPassword;
-        const decodedToken = req.user
-
-
-        await AuthServices.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload)
-
-        sendResponse(res, {
-            success: true,
-            statusCode: 201,
-            message: "Password Changed Successfully",
-            data: null
-        })
-    } catch (err: any) {
-        console.log(err);
-        next(err)
-    }
-}
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     let redirectTo = req.query.state ? req.query.state as string : ""
@@ -176,10 +155,75 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
 
     res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`)
 })
+
+
+
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user
+
+    await AuthServices.changePassword(oldPassword, newPassword, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+
+
+
+const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user
+
+    await AuthServices.resetPassword(req.body, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+const setPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user as JwtPayload
+    const { password } = req.body;
+
+    await AuthServices.setPassword(decodedToken.userId, password);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const { email } = req.body;
+
+    await AuthServices.forgotPassword(email);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Email Sent Successfully",
+        data: null,
+    })
+})
 export const AuthControllers = {
     creadentialLogin,
     getNewAccessToken,
     logout,
     resetPassword,
+    setPassword,
+    forgotPassword,
+    changePassword,
     googleCallbackController
 }

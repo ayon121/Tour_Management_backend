@@ -14,7 +14,7 @@ export const SeedSuperAdmin = async () => {
         }
         console.log("Try To Create Super Admin ........");
 
-        const hashPassword = await bcrypt.hash(envVars.SUPER_ADMIN_PASS, Number(envVars.BCRYPT_SALT))
+        const hashPassword = await bcrypt.hash(envVars.SUPER_ADMIN_PASSWORD, Number(envVars.BCRYPT_SALT_ROUND))
 
         const authProvider: IAuthProvider = {
             provider: "credentials",
